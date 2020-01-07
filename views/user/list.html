@@ -1,0 +1,156 @@
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="page-breadcrumb">
+    <div class="row">
+        <div class="col-12 d-flex no-block align-items-center">
+            <h4 class="page-title">用户列表</h4>
+            <div class="ml-auto text-right">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">主页</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">用户列表</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="container-fluid">
+    <!-- ============================================================== -->
+    <!-- Start Page Content -->
+    <!-- ============================================================== -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <form class="form-horizontal" action="/user/list" method="get">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-12">
+                                <div class="form-group row">
+                                    <label for="fname"
+                                           class="col-sm-3 text-right control-label col-form-label">用户名</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="UserName"  name="UserName" value="{{.query.UserName}}" placeholder="用户名 Here">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-12">
+                                <div class="form-group row">
+                                    <label for="fname"
+                                           class="col-sm-3 text-right control-label col-form-label">姓名</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="RealName" name="RealName" value="{{.query.RealName}}" placeholder="姓名 Here">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-12">
+                                <div class="form-group row">
+                                    <label for="fname"
+                                           class="col-sm-3 text-right control-label col-form-label">手机号</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="Phone" name="Phone" value="{{.query.Phone}}" placeholder="手机号 Here">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-12">
+                                <button type="submit" class="btn btn-outline-primary">搜索</button>
+                                <button type="reset" class="btn btn-outline-warning">重置</button>
+                                <a href="/user/edit" type="button" class="btn btn-outline-info">新增</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title m-b-0">数据列表</h5>
+                </div>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">用户名</th>
+                        <th scope="col">手机号</th>
+                        <th scope="col">真实姓名</th>
+                        <th scope="col">时间</th>
+                        <th scope="col">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{range $ind, $elem := .userList}}
+                        <tr>
+                            <th scope="row">{{$ind}}</th>
+                            <td>{{$elem.UserName}}</td>
+                            <td>{{$elem.Phone}}</td>
+                            <td>{{$elem.RealName}}</td>
+                            <td>{{date $elem.CreateDate "Y-m-d H:i:s"}}</td>
+                            <td>
+                                <a href="/user/edit?id={{$elem.Id}}" class="btn btn-outline-secondary btn-sm">编辑</a>
+                                <button name="Delete" data-id="{{$elem.Id}}" type="button"
+                                        class="btn btn-outline-danger btn-sm">删除
+                                </button>
+                            </td>
+                        </tr>
+                    {{end}}
+
+                    </tbody>
+                </table>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 ">
+                            {{str2html .pageHtml}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End PAge Content -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Right sidebar -->
+    <!-- ============================================================== -->
+    <!-- .right-sidebar -->
+    <!-- ============================================================== -->
+    <!-- End Right sidebar -->
+    <!-- ============================================================== -->
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+<!-- ============================================================== -->
+{{template "/shared/footer.html"}}
+<script src="/static/dz/js/bootstrap.dz.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("button[name='Delete']").bind("click", function () {
+            var id = $(this).data("id")
+            var tr = $(this).parent().parent();
+            dz.showFormModal({
+                title: "提醒",
+                html: "<p class='bg-warning'><h3>是否删除此信息？</h3></p>",
+                button: "继续",
+                click: function () {
+                    $.get("/user/delete", { id: id, }, function (res) {
+                        if (res.errcode==0) {
+                            tr.remove();
+                        } else {
+                            alert("删除失败！"+res.errmsg);
+                        }
+                    },"json");
+                    return true;
+                }
+            });
+        });
+    })
+
+
+</script>

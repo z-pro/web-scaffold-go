@@ -1,0 +1,70 @@
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="page-breadcrumb">
+    <div class="row">
+        <div class="col-12 d-flex no-block align-items-center">
+            <h4 class="page-title">编辑/新增</h4>
+            <div class="ml-auto text-right">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Library</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <form class="form-horizontal col-md-4" enctype="multipart/form-data" action="/user/save" method="post">
+                    <div class="card-body">
+                        <h4 class="card-title">详情</h4>
+                        <div class="form-group row">
+                            <label for="fname" class="col-sm-3 text-right control-label col-form-label">姓名</label>
+                            <div class="col-sm-9">
+                                <input type="hidden" name="id" value="{{.entity.Id}}">
+                                <input type="text" class="form-control" id="fname" name="realName" value="{{.entity.RealName}}" placeholder="First Name Here">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="lname" class="col-sm-3 text-right control-label col-form-label">手机号</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="lname" name="Phone" value="{{.entity.Phone}}" placeholder="Last Name Here">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="lname" class="col-sm-3 text-right control-label col-form-label">头像</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" name="the_file">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cono1" class="col-sm-3 text-right control-label col-form-label">备注</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" name="Remark">{{.entity.Remark}}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top">
+                        <div class="card-body  text-right">
+                            <button type="submit" class="btn btn-primary">保存</button>
+                            <button type="button" class="btn btn-secondary" onclick="history.go(-1)">返回</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{template "/shared/footer.html"}}
