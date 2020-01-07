@@ -4,7 +4,7 @@ import "time"
 
 type User struct {
 	Id         int       `form:"id" orm :"auto,pk"` //默认//Id   int `orm:"pk;auto;column(user_id)"` //表示设置为主键并且自增，列名为user_id
-	RealName   string    `orm:"size(100)" json:"realName" form:"realName" description:"用户真实姓名"`
+	RealName   string    `orm:"size(100)" description:"用户真实姓名" json:"realName" form:"realName" `
 	UserName   string    `orm:"size(100)"column(user_name)`
 	Password   string    `orm:"size(100)"column(password)`
 	Phone      string    `orm:"size(100)"`
