@@ -73,43 +73,43 @@ func handleConnect(conn net.Conn) {
 	//循环读取客户端发来的消息
 	go func() {
 		buf2 := make([]byte, 4096)
-		for{
+		for {
 			i, e := conn.Read(buf2)
 			utils.AssertErr(e)
-			thisUser  :=onlineUsers[conn.RemoteAddr().String()].name
+			thisUser := onlineUsers[conn.RemoteAddr().String()].name
 			switch {
-			case i==0:
+			case i == 0:
 				fmt.Println(conn.RemoteAddr(), "已断开连接")
-				for _,v:=range onlineUsers{
-					v.NewUser<-[]byte("💨用户[" + thisUser + "]已退出当前聊天室\n")
+				for _, v := range onlineUsers {
+					v.NewUser <- []byte("💨用户[" + thisUser + "]已退出当前聊天室\n")
 				}
-				delete(onlineUsers,conn.RemoteAddr().String())
-			case string(buf2[:i])=="who\n":
+				delete(onlineUsers, conn.RemoteAddr().String())
+			case string(buf2[:i]) == "who\n":
 				conn.Write([]byte("当前在线用户:\n"))
-				for _,v:=range onlineUsers{
+				for _, v := range onlineUsers {
 					conn.Write([]byte("🟢" + v.name + "\n"))
 				}
-			case len(string(buf2[:i]))>7&&string(buf2[:i])[:7]=="rename|":
-				onlineUsers[conn.RemoteAddr().String()]=UserInfo{name:string(buf2[:i-1])[7:],C:perC,NewUser:perNewUser}
+			case len(string(buf2[:i])) > 7 && string(buf2[:i])[:7] == "rename|":
+				onlineUsers[conn.RemoteAddr().String()] = UserInfo{name: string(buf2[:i-1])[7:], C: perC, NewUser: perNewUser}
 				_, _ = conn.Write([]byte("您已成功修改用户名！\n"))
 			}
 
 			var msgByte []byte
-			if buf2[0] != 10 && string(buf2[:i]) != "who\n"{
-				if len(string(buf2[:i])) <= 7 || string(buf2[:i])[:7] != "rename|"{
+			if buf2[0] != 10 && string(buf2[:i]) != "who\n" {
+				if len(string(buf2[:i])) <= 7 || string(buf2[:i])[:7] != "rename|" {
 					msgByte = append([]byte("💬["+thisUser+"]对大家说:"), buf2[:i]...)
 				}
-			}else {
-				msgByte=nil
+			} else {
+				msgByte = nil
 			}
-			overTime<-true
-			message<-msgByte
+			overTime <- true
+			message <- msgByte
 		}
 	}()
-	for{
+	for {
 		select {
 		case <-overTime:
-		case <-time.After(time.Second*60):
+		case <-time.After(time.Second * 60):
 			conn.Write([]byte("抱歉，由于长时间未发送聊天内容，您已被系统踢出"))
 			thisUser := onlineUsers[conn.RemoteAddr().String()].name
 			for _, v := range onlineUsers {
@@ -134,9 +134,4 @@ func notifyAll() {
 			}
 		}
 	}
-}
-
-func main() {
-	startServer()
-
 }

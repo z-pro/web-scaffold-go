@@ -11,18 +11,15 @@ func processData(conn net.Conn) {
 	for {
 		n, err := conn.Read(bytes)
 		utils.AssertErr(err)
-		if n>0{
+		if n > 0 {
 			fmt.Printf(string(bytes))
 		}
 	}
 }
 
 func mainT2() {
-
 	/*defer func() {
-
 		recover()
-
 	}()
 	*/
 	fmt.Print("running")
