@@ -1,9 +1,7 @@
 package conf
 
 import (
-	"gim/public/logger"
-
-	"go.uber.org/zap"
+	"os"
 )
 
 func initProdConf() {
@@ -33,4 +31,7 @@ func initProdConf() {
 
 	/*logger.Leavel = zap.InfoLevel
 	logger.Target = logger.File*/
+	_, _ = os.OpenFile("e:/beeapp.log", os.O_RDWR|os.O_APPEND, 0644)
+	//logger := log.New(os.Stdout, "[ErrorLog]", log.Lshortfile | log.Ldate | log.Ltime)
+
 }

@@ -10,15 +10,14 @@ import (
 	"ssnbee/utils"
 )
 
+// Deprecated: use dao
 type UserManager struct {
-
 }
 
-func NewUserManager() *UserManager  {
-	mng:=&UserManager{}
+func NewUserManager() *UserManager {
+	mng := &UserManager{}
 	return mng
 }
-
 
 func (mgr *UserManager) GetPagedList(query query.UserQuery) (pager utils.Pager) {
 	pageNum := query.PageNum
@@ -31,17 +30,17 @@ func (mgr *UserManager) GetPagedList(query query.UserQuery) (pager utils.Pager) 
 	for i := 0; i < types.NumField(); i++ {
 		// 获取每个成员的结构体字段类型
 		fieldType := types.Field(i)
-		if fieldType.Type.String() =="string" {
+		if fieldType.Type.String() == "string" {
 			v := values.Field(i).String()
-			if v!=""{
-				table = table.Filter(fieldType.Name,v)
+			if v != "" {
+				table = table.Filter(fieldType.Name, v)
 			}
 		}
 		// 获取interface{}类型的值, 通过类型断言转换
 		//fmt.Printf("name: %v  tag: '%v'  %v  %v\n", fieldType.Name, fieldType.Tag,fieldType.Type,)
 	}
 	table.Limit(pageSize, (pageNum-1)*pageSize).All(user)
-	TotalCount, _ :=table.Count()
+	TotalCount, _ := table.Count()
 
 	pager.Total = int(TotalCount)
 	pager.PageSize = pageSize

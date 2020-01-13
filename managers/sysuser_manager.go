@@ -12,6 +12,7 @@ import (
 	"ssnbee/utils"
 )
 
+// Deprecated: use dao
 type SysUserManager struct {
 	DBConf *models.DBConfig
 }
@@ -57,8 +58,8 @@ func (mgr *SysUserManager) GetPagedList(query query.SysUserQuery) (pager utils.P
 	pageSize := query.PageSize
 	o := orm.NewOrm()
 	user := new([]entity.SysUser)
-/*	o.QueryTable("sys_user").Limit(pageSize, (pageNum-1)*pageSize).All(user)
-	TotalCount, _ := o.QueryTable("sys_user").Count()*/
+	/*	o.QueryTable("sys_user").Limit(pageSize, (pageNum-1)*pageSize).All(user)
+		TotalCount, _ := o.QueryTable("sys_user").Count()*/
 	table := o.QueryTable("sys_user")
 
 	types := reflect.TypeOf(query)
@@ -66,17 +67,17 @@ func (mgr *SysUserManager) GetPagedList(query query.SysUserQuery) (pager utils.P
 	for i := 0; i < types.NumField(); i++ {
 		// 获取每个成员的结构体字段类型
 		fieldType := types.Field(i)
-		if fieldType.Type.String() =="string" {
+		if fieldType.Type.String() == "string" {
 			v := values.Field(i).String()
-			if v!=""{
-				table = table.Filter(fieldType.Name,v)
+			if v != "" {
+				table = table.Filter(fieldType.Name, v)
 			}
 		}
 		// 获取interface{}类型的值, 通过类型断言转换
 		//fmt.Printf("name: %v  tag: '%v'  %v  %v\n", fieldType.Name, fieldType.Tag,fieldType.Type,)
 	}
 	table.Limit(pageSize, (pageNum-1)*pageSize).All(user)
-	TotalCount, _ :=table.Count()
+	TotalCount, _ := table.Count()
 
 	pager.Total = int(TotalCount)
 	pager.PageSize = pageSize
