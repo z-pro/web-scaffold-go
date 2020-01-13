@@ -15,6 +15,7 @@ import (
 type SysuserController struct {
 	beego.Controller
 }
+
 func (ctrl *SysuserController) Get() {
 	ctrl.Layout = "shared/layout.html"
 	ctrl.TplName = "sysuser/list.html"
@@ -24,21 +25,21 @@ func (ctrl *SysuserController) Get() {
 	ctrl.LayoutSections["navSection"] = "shared/nav.html"
 
 	pageNum, err := strconv.Atoi(ctrl.Ctx.Input.Param(":pageNum"))
-	if err!=nil{
-		pageNum=1
+	if err != nil {
+		pageNum = 1
 	}
 
 	sysUserManager := new(managers.SysUserManager)
-	pageSize, _ := beego.GetConfig("Int", "pagesize", 10)
+	pageSize, _ := beego.AppConfig.Int("pagesize") //beego.GetConfig("Int", "pagesize", 10)
 	var query query.SysUserQuery
 	ctrl.ParseForm(&query)
-	query.PageNum=pageNum
-	query.PageSize=pageSize.(int)
+	query.PageNum = pageNum
+	query.PageSize = pageSize //pageSize.(int)
 	pager := sysUserManager.GetPagedList(query)
 
 	ctrl.Data["sysuserList"] = pager.List
-	ctrl.Data["query"] =query
-	ctrl.Data["pageHtml"], _, _ =utils.LimitPage(pageNum,pager.Total,ctrl.Ctx.Request.URL.RawQuery,"/sysuser/list")
+	ctrl.Data["query"] = query
+	ctrl.Data["pageHtml"], _, _ = utils.LimitPage(pageNum, pager.Total, ctrl.Ctx.Request.URL.RawQuery, "/sysuser/list")
 
 }
 
@@ -53,7 +54,7 @@ func (ctrl *SysuserController) Detail() {
 
 	sysUserManager := new(managers.SysUserManager)
 	id, _ := ctrl.GetInt("id", 0)
-	entity,_ := sysUserManager.SelectById(id)
+	entity, _ := sysUserManager.SelectById(id)
 	ctrl.Data["entity"] = entity
 
 }
@@ -65,14 +66,14 @@ func (ctrl *SysuserController) Post() {
 	ctrl.ParseForm(&ob)
 	logs.Debug(ob)
 	sysUserManager := new(managers.SysUserManager)
-	model,_ := sysUserManager.SelectById(ob.Id)
+	model, _ := sysUserManager.SelectById(ob.Id)
 	if &model == nil || model.Id <= 0 { //新增
 		ob.CreateDate = time.Now()
 		sysUserManager.Insert(ob)
 	} else {
 		model.RealName = ob.RealName
-		model.Phone=ob.Phone
-		model.Remark=ob.Remark
+		model.Phone = ob.Phone
+		model.Remark = ob.Remark
 		sysUserManager.Update(model)
 	}
 	ctrl.Redirect("/sysuser/list", 302)
@@ -84,15 +85,13 @@ func (ctrl *SysuserController) Delete() {
 	sysUserManager := new(managers.SysUserManager)
 	succ := sysUserManager.DeleteById(id)
 	res := make(map[string]interface{})
-	if succ{
+	if succ {
 		res["errcode"] = 0
-	}else
-	{
+	} else {
 		res["errcode"] = 1
 		res["errmsg"] = "删除失败！"
 	}
 	bytes, _ := json.Marshal(res)
 	ctrl.Ctx.WriteString(string(bytes))
-
 
 }

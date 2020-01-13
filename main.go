@@ -14,6 +14,8 @@ import (
 	// 使用 go get github.com/go-sql-driver/mysql 获取
 	//下划线
 	_ "github.com/go-sql-driver/mysql"
+
+	_ "ssnbee/managers/mq/consume"
 )
 
 //初始化操作
@@ -51,24 +53,22 @@ func init() {
 func main() {
 	//配置全局
 	//beego.BConfig.WebConfig.Session.SessionOn=true
-	beego.BConfig.WebConfig.Session.SessionGCMaxLifetime = 86400	//设置Session有效期,单位秒
+	beego.BConfig.WebConfig.Session.SessionGCMaxLifetime = 86400 //设置Session有效期,单位秒
 	beego.Run()
 
 }
-func testMaxCPU()  {
+func testMaxCPU() {
 	cpuNum := runtime.NumCPU() //获得当前设备的cpu核心数
 	fmt.Println("cpu核心数:", cpuNum)
 	runtime.GOMAXPROCS(cpuNum)
 }
 
-
-
-func testStoper()  {
+func testStoper() {
 
 	// 创建一个计时器, 2秒后触发
 	stopper := time.NewTimer(time.Second * 2)
 	ticker := time.NewTicker(time.Millisecond * 500)
-	for{
+	for {
 		select {
 		case <-stopper.C:
 			fmt.Print("ssss")
@@ -79,12 +79,10 @@ func testStoper()  {
 
 	}
 
-stopTag :
+stopTag:
 	fmt.Print("over")
 
 }
-
-
 
 func testAfterFun() {
 	exit := make(chan int)

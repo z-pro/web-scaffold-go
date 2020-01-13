@@ -34,11 +34,11 @@ func (ctrl *UserController) Get() {
 	}
 
 	manager := managers.NewUserManager() //new(managers.SysUserManager)
-	pageSize, _ := beego.GetConfig("Int", "pagesize", 10)
+	pageSize, _ := beego.AppConfig.Int("pagesize")
 	var query query.UserQuery
 	ctrl.ParseForm(&query)
 	query.PageNum = pageNum
-	query.PageSize = pageSize.(int)
+	query.PageSize = pageSize
 	pager := manager.GetPagedList(query)
 
 	ctrl.Data["userList"] = pager.List

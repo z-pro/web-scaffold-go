@@ -11,7 +11,6 @@ import (
 	"strings"
 )
 
-
 func init() {
 
 	// 最后一个参数必须设置为false 不然无法打印数据
@@ -28,27 +27,24 @@ func init() {
 		AllowCredentials: true,
 	}))
 
-    beego.Router("/", &controllers.MainController{},)
-	beego.Router("/home/index", &controllers.HomeController{},"get:Index")
-	beego.Router("/home/logout", &controllers.HomeController{},"get:Logout")
-	beego.Router("/home/login", &controllers.HomeController{},"get:Login;post:PostLogin")
-
+	beego.Router("/", &controllers.MainController{})
+	beego.Router("/home/index", &controllers.HomeController{}, "get:Index")
+	beego.Router("/home/logout", &controllers.HomeController{}, "get:Logout")
+	beego.Router("/home/login", &controllers.HomeController{}, "get:Login;post:PostLogin")
 
 	beego.Router("/sysuser/list/?:pageNum", &controllers.SysuserController{})
 	beego.Router("/sysuser/save", &controllers.SysuserController{})
-	beego.Router("/sysuser/delete", &controllers.SysuserController{},"get:Delete")
-	beego.Router("/sysuser/edit", &controllers.SysuserController{},"get:Detail")
-
+	beego.Router("/sysuser/delete", &controllers.SysuserController{}, "get:Delete")
+	beego.Router("/sysuser/edit", &controllers.SysuserController{}, "get:Detail")
 
 	beego.Include(&controllers.UserController{})
 	//beego.Router("/user/list/?:pageNum", &controllers.UserController{})
 
-	beego.Router("/about",&controllers.AboutController{},"get:Get")
-
+	beego.Router("/about", &controllers.AboutController{}, "get:Get")
 
 }
 
-func testNs()  {
+func testNs() {
 	//初始化 namespace
 	ns :=
 		beego.NewNamespace("/v1",
@@ -82,7 +78,42 @@ func testNs()  {
 	beego.AddNamespace(ns)
 }
 
+func testNs2() {
+	//APIS
+	ns :=
+		beego.NewNamespace("/api",
+			//此处正式版时改为验证加密请求
+			beego.NSCond(func(ctx *context.Context) bool {
+				if ua := ctx.Input.Context.Request.UserAgent(); ua != "" {
+					return true
+				}
+				return false
+			}),
+			/*	beego.NSNamespace("/ios",
+						//CRUD Create(创建)、Read(读取)、Update(更新)和Delete(删除)
+						beego.NSNamespace("/create",
+							// /api/ios/create/node/
+							beego.NSRouter("/node", &apis.CreateNodeHandler{}),
+							// /api/ios/create/topic/
+							beego.NSRouter("/topic", &apis.CreateTopicHandler{}),
+						),
+						beego.NSNamespace("/read",
+							beego.NSRouter("/node", &apis.ReadNodeHandler{}),
+							beego.NSRouter("/topic", &apis.ReadTopicHandler{}),
+						),
+						beego.NSNamespace("/update",
+							beego.NSRouter("/node", &apis.UpdateNodeHandler{}),
+							beego.NSRouter("/topic", &apis.UpdateTopicHandler{}),
+						),
+						beego.NSNamespace("/delete",
+							beego.NSRouter("/node", &apis.DeleteNodeHandler{}),
+							beego.NSRouter("/topic", &apis.DeleteTopicHandler{}),
+						)
+			),*/
+		)
 
+	beego.AddNamespace(ns)
+}
 
 // 添加日志拦截器
 var FilterLog = func(ctx *context.Context) {
@@ -100,12 +131,13 @@ var FilterLog = func(ctx *context.Context) {
 // 后台权限校验
 var FilterAdminAuth = func(ctx *context.Context) {
 	session := ctx.Input.Session(models.ADMIN_SESSION_KEY)
-	if session ==nil && !strings.Contains(ctx.Request.RequestURI,"login"){
+	if session == nil && !strings.Contains(ctx.Request.RequestURI, "login") {
 		//fmt.Sprintf(url, rq.Encode())
 		ctx.Redirect(302, "/home/login?r_url="+ctx.Request.RequestURI)
 	}
 	logs.Info("dddd")
 }
+
 //实现了如何实现自己的路由规则:
 /*var UrlManager = func(ctx *context.Context) {
 	// 数据库读取全部的 url mapping 数据
