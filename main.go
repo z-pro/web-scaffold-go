@@ -14,7 +14,6 @@ import (
 	// 使用 go get github.com/go-sql-driver/mysql 获取
 	//下划线
 	_ "github.com/go-sql-driver/mysql"
-
 	_ "ssnbee/managers/mq/consume"
 )
 

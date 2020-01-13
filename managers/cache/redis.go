@@ -4,7 +4,17 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/go-redis/redis"
+	"time"
 )
+
+func init() {
+	client := redis.NewClient(&redis.Options{
+		Addr:     beego.AppConfig.String("redis_host"),
+		Password: beego.AppConfig.String("redis_auth"), // no password set
+		DB:       8,                                    // use default DB
+	})
+	_ = client.Set("key", "value", time.Second*1000).Err()
+}
 
 func InitRedis() {
 	client := redis.NewClient(&redis.Options{
