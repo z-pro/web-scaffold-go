@@ -11,21 +11,18 @@ import (
 	"ssnbee/utils"
 )
 
-type sysUserDao struct {
+type userDao struct {
 	base.GenericDao
 }
 
-var SysUserDao = new(sysUserDao)
+var UserDao = new(userDao)
 
-func (mgr *sysUserDao) GetPagedList(query query.SysUserQuery) (pager utils.Pager) {
+func (mgr *userDao) GetPagedList(query query.UserQuery) (pager utils.Pager) {
 	pageNum := query.PageNum
 	pageSize := query.PageSize
 	o := orm.NewOrm()
-	user := new([]entity.SysUser)
-	/*	o.QueryTable("sys_user").Limit(pageSize, (pageNum-1)*pageSize).All(user)
-		TotalCount, _ := o.QueryTable("sys_user").Count()*/
-	table := o.QueryTable("sys_user")
-
+	user := new([]entity.User)
+	table := o.QueryTable("user")
 	types := reflect.TypeOf(query)
 	values := reflect.ValueOf(query)
 	for i := 0; i < types.NumField(); i++ {
@@ -51,25 +48,25 @@ func (mgr *sysUserDao) GetPagedList(query query.SysUserQuery) (pager utils.Pager
 
 }
 
-func (mgr *sysUserDao) GetList() interface{} {
+func (mgr *userDao) GetList() interface{} {
 	o := orm.NewOrm()
-	user := new([]entity.SysUser)
-	o.QueryTable("sys_user").All(user)
+	user := new([]entity.User)
+	o.QueryTable("user").All(user)
 	return user
 }
 
-func (mgr *sysUserDao) DeleteById(id int) bool {
+func (mgr *userDao) DeleteById(id int) bool {
 	o := orm.NewOrm()
-	i, err := o.Delete(&entity.SysUser{Id: id})
+	i, err := o.Delete(&entity.User{Id: id})
 	if err == nil {
 		logs.Debug(i)
 	}
 	return i > 0
 }
 
-func (mgr *sysUserDao) SelectById(id int) (model entity.SysUser, err error) {
+func (mgr *userDao) SelectById(id int) (model entity.User, err error) {
 	o := orm.NewOrm()
-	ob := entity.SysUser{Id: id}
+	ob := entity.User{Id: id}
 	err = o.Read(&ob)
 	if err == orm.ErrNoRows {
 		fmt.Println("查询不到")
@@ -79,12 +76,9 @@ func (mgr *sysUserDao) SelectById(id int) (model entity.SysUser, err error) {
 		return
 	}
 	return ob, err
-	//Read 默认通过主键查询，可以使用指定的字段进行查询：
-	/*user := User{Name: "slene"}
-	err = o.Read(&user, "Name")*/
 }
 
-func (mgr *sysUserDao) Update(sysUser entity.SysUser) bool {
+func (mgr *userDao) Update(sysUser entity.User) bool {
 	orm.Debug = true
 	var o orm.Ormer
 	o = orm.NewOrm()
@@ -95,7 +89,7 @@ func (mgr *sysUserDao) Update(sysUser entity.SysUser) bool {
 	return false
 }
 
-func (mgr *sysUserDao) Insert(sysUser entity.SysUser) (model entity.SysUser) {
+func (mgr *userDao) Insert(sysUser entity.User) (model entity.User) {
 	var o orm.Ormer
 	o = orm.NewOrm()
 	_, err := o.Insert(&sysUser)
