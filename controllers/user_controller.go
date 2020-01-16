@@ -76,5 +76,14 @@ func (ctrl *UserController) Post() {
 // @router /user/chat [get]
 func (ctrl *UserController) Chat() {
 	ctrl.TplName = "user/chat.html"
+	ctrl.Layout = "shared/layout.html"
+	//其他的部分
+	ctrl.LayoutSections = make(map[string]string)
+	ctrl.LayoutSections["navSection"] = "shared/nav.html"
+}
+
+// @router /user/chatroom [get]
+func (ctrl *UserController) ChatRoom() {
+	ctrl.TplName = "user/chatroom.html"
 	//ctrl.Layout = "shared/layout.html"
 }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/js/stomp.js"></script>
+    <script src="/static/js/socket.min.js"></script>
+</head>
+<body>
+
+</body>
+<script type="text/javascript">
+    var wsLocalUrl = 'http://localhost:9001'
+    socket = new SockJS(wsLocalUrl+'/echo');
+    var stompClient = Stomp.over(socket);
+    stompClient.connect('','',function(frame){
+        stompClient.subscribe("/", function(message) {
+            alert(JSON.parse(message.body));
+        });
+    });
+</script>
+</html>

@@ -1,53 +1,236 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>(runoob.com)</title>
-
-    <script type="text/javascript">
-        function WebSocketTest()
-        {
-            if ("WebSocket" in window)
-            {
-                alert("您的浏览器支持 WebSocket!");
-
-                // 打开一个 web socket
-                var ws = new WebSocket("ws://localhost:9001/echo");
-
-                ws.onopen = function()
-                {
-                    // Web Socket 已连接上，使用 send() 方法发送数据
-                    ws.send("发送数据");
-                    alert("数据发送中...");
-                };
-
-                ws.onmessage = function (evt)
-                {
-                    var received_msg = evt.data;
-                    alert("数据已接收...");
-                };
-
-                ws.onclose = function()
-                {
-                    // 关闭 websocket
-                    alert("连接已关闭...");
-                };
-            }
-
-            else
-            {
-                // 浏览器不支持 WebSocket
-                alert("您的浏览器不支持 WebSocket!");
-            }
-        }
-    </script>
-
-</head>
-<body>
-
-<div id="sse">
-    <a href="javascript:WebSocketTest()">运行 WebSocket</a>
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="page-breadcrumb">
+    <div class="row">
+        <div class="col-12 d-flex no-block align-items-center">
+            <h4 class="page-title">聊天室</h4>
+            <div class="ml-auto text-right">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">主页</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">聊天室</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
 </div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="container-fluid">
+    <!-- ============================================================== -->
+    <!-- Start Page Content -->
+    <!-- ============================================================== -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Chat Option</h4>
+                    <div class="chat-box scrollable" style="height:475px;">
+                        <!--chat Row -->
+                        <ul id="chatList" class="chat-list">
+                            <!--chat Row -->
+                            <li class="chat-item">
+                                <div class="chat-img"><img src="/static/assets/images/users/1.jpg" alt="user"></div>
+                                <div class="chat-content">
+                                    <h6 class="font-medium">James Anderson</h6>
+                                    <div class="box bg-light-info">Lorem Ipsum is simply dummy text of the printing
+                                        &amp; type setting industry.
+                                    </div>
+                                </div>
+                                <div class="chat-time">10:56 am</div>
+                            </li>
+                            <!--chat Row -->
+                            <li class="chat-item">
+                                <div class="chat-img"><img src="/static/assets/images/users/2.jpg" alt="user"></div>
+                                <div class="chat-content">
+                                    <h6 class="font-medium">Bianca Doe</h6>
+                                    <div class="box bg-light-info">It’s Great opportunity to work.</div>
+                                </div>
+                                <div class="chat-time">10:57 am</div>
+                            </li>
+                            <!--chat Row -->
+                            <li class="odd chat-item">
+                                <div class="chat-content">
+                                    <div class="box bg-light-inverse">I would love to join the team.</div>
+                                    <br>
+                                </div>
+                            </li>
+                            <!--chat Row -->
+                            <li class="odd chat-item">
+                                <div class="chat-content">
+                                    <div class="box bg-light-inverse">Whats budget of the new project.</div>
+                                    <br>
+                                </div>
+                                <div class="chat-time">10:59 am</div>
+                            </li>
+                            <!--chat Row -->
+                            <li class="chat-item">
+                                <div class="chat-img"><img src="/static/assets/images/users/3.jpg" alt="user"></div>
+                                <div class="chat-content">
+                                    <h6 class="font-medium">Angelina Rhodes</h6>
+                                    <div class="box bg-light-info">Well we have good budget for the project</div>
+                                </div>
+                                <div class="chat-time">11:00 am</div>
+                            </li>
+                            <!--chat Row -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body border-top">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="input-field m-t-0 m-b-0">
+                                <textarea placeholder="Type and enter 输入聊天内容" id="talkwords"
+                                          class="form-control border-0 talk_word"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <a class="btn-circle btn-lg btn-cyan float-right text-white talk_sub" id="talksub"
+                               href="javascript:void(0)"><i class="fas fa-paper-plane"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End PAge Content -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Right sidebar -->
+    <!-- ============================================================== -->
+    <!-- .right-sidebar -->
+    <!-- ============================================================== -->
+    <!-- End Right sidebar -->
+    <!-- ============================================================== -->
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+<!-- ============================================================== -->
+{{template "/shared/footer.html"}}
+<script src="/static/dz/js/bootstrap.dz.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // 询问框获取用户昵称
+        let username = localStorage.getItem("username") ?
+            localStorage.getItem("username") : disp_prompt();
+        let chatList = $("#chatList");
 
-</body>
-</html>
+
+        let talkWords = $("#talkwords");
+        let talkSubmit = $("#talksub");
+        // webSocket
+        let wsURL = "ws://localhost:9001/echo";
+        ws = new WebSocket(wsURL);
+        try {
+            // 监听连接服务器
+            ws.onopen = function () {
+                console.log("已连接服务器")
+            };
+
+            // 监听关闭服务器
+            ws.onclose = function () {
+                if (ws) {
+                    ws.close();
+                    ws = null
+                }
+                console.log("关闭服务器连接")
+            };
+
+            // 监听信息
+            ws.onmessage = function (result) {
+                let data = JSON.parse(result.data);
+                chatList.append($(printMsg(data)));
+                var scrollHeight = chatList.prop("scrollHeight");
+                chatList.scrollTop(scrollHeight);
+            };
+
+            // 监听错误
+            ws.onerror = function () {
+                if (ws) {
+                    ws.close();
+                    ws = null;
+                }
+                console.log("服务器连接失败")
+            }
+        } catch (e) {
+            console.log(e.message)
+        }
+
+        document.onkeydown = function (event) {
+            let e = event || window.event;
+            if (e && e.keyCode === 13) { //回车键的键值为13
+                talkSubmit.click()
+            }
+        };
+
+        talkSubmit.click(function () {
+            // 获取输入框内容
+            let content = talkWords.val();
+            if (content === "") {
+                // 消息为空时弹窗
+                alert("消息不能为空");
+                return;
+            }
+
+            // 发送数据
+            if (ws == null) {
+                alert("连接服务器失败,请刷新页面");
+                window.location.reload();
+                return
+            }
+            let request = {"username": username, "message": content};
+            ws.send(JSON.stringify(request));
+            // 清空输入框
+            talkWords.val("")
+        })
+    });
+
+    function printMsg(data) {
+        let username = localStorage.getItem("username")
+        let className = "";
+        let user = data.username
+        // 如果是本人,放在右边 不是本人 放在左边
+        if (data.username === username) {
+            className = "odd";
+            user = "";
+        }
+        let str = "";
+        if (!className) {
+            str = '<li class="chat-item">' +
+                '<div class="chat-img"><img src="/static/assets/images/users/2.jpg" alt="user"></div>' +
+                '<div class="chat-content">' +
+                '<h6 class="font-medium">' + user + '</h6>' +
+                '<div class="box bg-light-info">' + data.message + '</div>' +
+                '</div>' +
+                '<div class="chat-time">10:57 am</div>' +
+                '</li>'
+        } else {
+            str = '<li class="' + className + ' chat-item">' +
+                '<div class="chat-content">' +
+                '<div class="box bg-light-inverse">' + data.message + '</div>' +
+                '<br>' +
+                '</div>' +
+                '<div class="chat-time">10:59 am</div>' +
+                '</li>'
+        }
+        return str
+    }
+
+
+    function disp_prompt() {
+        let username = prompt("请输入昵称");
+        if (username == null || username === "") {
+            disp_prompt()
+        } else {
+            localStorage.setItem("username", username);
+            return username;
+        }
+    }
+</script>

@@ -16,7 +16,7 @@ func init() {
 	http.HandleFunc("/echo", func(res http.ResponseWriter, r *http.Request) {
 		ServeWs(hub, res, r)
 	})
-	DataTest()
+	SendChat()
 }
 
 func main() {
@@ -26,9 +26,19 @@ func main() {
 	}
 }
 
-func DataTest() {
+func SendChat() {
 	hub.Broadcast <- []byte(string("this is return message"))
 	fn := func(message []byte, hub *Hub) error {
+		for cli := range hub.clients {
+			cli.send <- message
+			/*err := websocket.Message.Send(key, data)
+			if err != nil{
+				// 移除出错的连接
+				delete(users, key)
+				fmt.Println("发送出错: " + err.Error())
+				break
+			}*/
+		}
 		log.Println("message:", string(message))
 		return nil
 	}
