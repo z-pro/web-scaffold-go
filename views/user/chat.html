@@ -30,7 +30,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Chat Option</h4>
+                    <h4 class="card-title">技术专家群（10）</h4>
                     <div class="chat-box scrollable" style="height:475px;">
                         <!--chat Row -->
                         <ul id="chatList" class="chat-list">
@@ -209,7 +209,7 @@
                 '<h6 class="font-medium">' + user + '</h6>' +
                 '<div class="box bg-light-info">' + data.message + '</div>' +
                 '</div>' +
-                '<div class="chat-time">10:57 am</div>' +
+                '<div class="chat-time">'+data.createon+'</div>' +
                 '</li>'
         } else {
             str = '<li class="' + className + ' chat-item">' +
@@ -217,13 +217,11 @@
                 '<div class="box bg-light-inverse">' + data.message + '</div>' +
                 '<br>' +
                 '</div>' +
-                '<div class="chat-time">10:59 am</div>' +
+                '<div class="chat-time">'+data.createon+'</div>' +
                 '</li>'
         }
         return str
     }
-
-
     function disp_prompt() {
         let username = prompt("请输入昵称");
         if (username == null || username === "") {

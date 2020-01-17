@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
+	"ssnbee/models/entity"
+	"time"
 )
 
 var (
@@ -29,8 +32,12 @@ func main() {
 func SendChat() {
 	hub.Broadcast <- []byte(string("this is return message"))
 	fn := func(message []byte, hub *Hub) error {
+		msg := new(entity.ChatMessage)
+		json.Unmarshal(message, &msg)
+		msg.CreateOn = entity.JsonTime(time.Now())
+		bytes, _ := json.Marshal(msg)
 		for cli := range hub.clients {
-			cli.send <- message
+			cli.send <- bytes
 			/*err := websocket.Message.Send(key, data)
 			if err != nil{
 				// 移除出错的连接
@@ -39,7 +46,7 @@ func SendChat() {
 				break
 			}*/
 		}
-		log.Println("message:", string(message))
+		log.Println("message:", string(bytes))
 		return nil
 	}
 	hub.OnMessage = fn
